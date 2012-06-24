@@ -23,6 +23,10 @@
 			<div class="span_12">
 				You amazing Chrome Packaged App Goes HERE...
 			</div>
+			<hr />
+		</div>
+		<div class="span 12">
+			<button class="btn">Select File</button>
 		</div>
 	</div>
 
@@ -34,7 +38,42 @@
 	<!-- inlcude Peter Higgins fantastic pub/sub jQuery plugin -->
 	<script src="js/pubsub.min.js"></script>
 	<!-- include the sandbox postman -->
-	<script src="js/postman-sandbox.js"></script>
+	<script src="js/postman.js"></script>
+
+	<script>
+
+		$(function() {
+
+			// initialize the postman
+			MYAPP.postman.init(window.top);
+
+			// create a new kendo ui window and assign its reference to the win variable
+			var win = $("<div></div>").kendoWindow({
+				modal: true,
+				visible: false
+			}).data("kendoWindow");
+
+			// assign a click event to the button
+			$("button").on("click", function() {
+				// send the message to the packaged app to open the native 'select file' window
+				$.publish("/postman/deliver", [ {}, "/select/file"]);
+			});
+
+			// subscribe to the file loaded event
+			$.subscribe("/file/loaded", function(message) {
+				// create a new image
+				var img = new Image();
+				img.src = message.src;
+				// when the image has loaded
+				img.onload = function()  {
+					// assign this image as the content of the kendo ui window and open it
+					win.content(img).center().open()
+				}
+			});
+
+		});
+
+	</script>
 
 </body>
 </html>
