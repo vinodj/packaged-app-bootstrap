@@ -11,8 +11,7 @@
  },
  "permissions": [
    "experimental",
-   "appWindow", 
-   "notifications", 
+   "appWindow",
    "fileSystem"
  ],
   "sandbox": {

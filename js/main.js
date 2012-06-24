@@ -11,14 +11,6 @@ MYAPP.main = (function($) {
 
     // subscribe to the /select/image message and return an image using
     // the native api file picker in chrome packaged apps
-    $.subscribe("/notification/show", function(message) {
-    
-        var notification = webkitNotifications.createNotification('icon_16.png', message.title, message.body);
-        notification.show();
-    });
-
-    // subscribe to the /select/image message and return an image using
-    // the native api file picker in chrome packaged apps
     $.subscribe("/select/file", function() {
     
         chrome.fileSystem.chooseFile({ type: "chooseFile"}, function(entry) {
@@ -41,15 +33,6 @@ MYAPP.main = (function($) {
           });
         
         });   
-    });
-
-    // subscribe to the /app/ready event which tells us that the app is ready
-    $.subscribe("/app/ready", function() {
-
-      // create a new message to send to whatever is listenting
-      // to /greeting/hello inside the sandbox
-      $.publish("/postman/deliver", [{ message: { text: "Hello From The Extension" }}, "/greeting/hello"]);
-
     });
 
 })(jQuery);
