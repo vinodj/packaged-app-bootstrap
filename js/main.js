@@ -13,7 +13,7 @@ MYAPP.main = (function($) {
     // the native api file picker in chrome packaged apps
     $.subscribe("/select/file", function() {
     
-        chrome.fileSystem.chooseFile({ type: "chooseFile"}, function(entry) {
+        chrome.fileSystem.chooseFile({ type: "openFile"}, function(entry) {
     
           // this gives us a file entry. We just need to read it.
           entry.file(function(file) {
