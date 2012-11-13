@@ -34,7 +34,7 @@
 	<script src="js/jquery.min.js"></script>
 	<script src="http://cdn.kendostatic.com/2012.2.913/js/kendo.all.min.js"></script>
 	<!-- include the twitter bootstrap js -->
-	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.js"></script>
 	<!-- inlcude pkg plugin -->
 	<script src="js/pkg.js"></script>
 
@@ -54,14 +54,14 @@
 			// assign a click event to the button
 			$("button").on("click", function() {
 				// send the message to the packaged app to open the native 'select file' window
-				$.pkg.send("pkg", [{}, "/select/file"]);
+				$.pkg.send("/select/file");
 			});
 
 			// subscribe to the file loaded event
-			$.pkg.listen("/file/loaded", function(message) {
+			$.pkg.listen("/file/loaded", function(src) {
 				// create a new image
 				var img = new Image();
-				img.src = message.src;
+				img.src = src;
 				// when the image has loaded
 				img.onload = function()  {
 					// assign this image as the content of the kendo ui window and open it

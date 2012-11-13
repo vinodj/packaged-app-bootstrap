@@ -1,6 +1,4 @@
-var MYAPP = MYAPP || {};
-
-MYAPP.main = (function($) {
+(function($) {
 	
 	// get a reference to the iframe that holds the app
 	iframe = document.getElementById("iframe");
@@ -24,7 +22,7 @@ MYAPP.main = (function($) {
             // create an event for when the file is done reading
             reader.onloadend = function(e) {
               // tell the postman to deliver this to the sandbox
-              $.pkg.send("pkg", [ { src: this.result }, "/file/loaded"])
+              $.pkg.send("/file/loaded", [this.result])
             }
     
             // read the file as a data URL

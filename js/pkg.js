@@ -23,41 +23,15 @@ messages through chrome apps.
 		// the pkg item will exist off the jQuery object
 		pkg = d.pkg = {};
 
-	pkg.send = function(/* String */topic, /* Array? */args){
-		// summary: 
-		//		send some data on a named topic.
-		// topic: String
-		//		The channel to publish on
-		// args: Array?
-		//		The data to publish. Each array item is converted into an ordered
-		//		arguments on the subscribed functions. 
-		//
-		// example:
-		//		send stuff on '/some/topic'. Anything subscribed will be called
-		//		with a function signature like: function(a,b,c){ ... }
-		//
-		//	|		$.pkg.send("/some/topic", ["a","b","c"]);
-		cache[topic] && d.each(cache[topic], function(){
-			this.apply(d, args || []);
-		});
+	pkg.send = function(/* String */endpoint, /* Array? */message){
+		var params = {
+          	message: message,
+          	endpoint: endpoint
+         };
+        return receiver.postMessage(params, "*");
 	};
 
 	pkg.listen = function(/* String */topic, /* Function */callback){
-		// summary:
-		//		Register a callback on a named topic.
-		// topic: String
-		//		The channel to subscribe to
-		// callback: Function
-		//		The handler event. Anytime something is $.publish'ed on a 
-		//		subscribed channel, the callback will be called with the
-		//		published array as ordered arguments.
-		//
-		// returns: Array
-		//		A handle which can be used to unsubscribe this particular subscription.
-		//	
-		// example:
-		//	|	$.pkg.listen("/some/topic", function(a, b, c){ /* handle data */ });
-		//
 		if(!cache[topic]){
 			cache[topic] = [];
 		}
@@ -66,13 +40,6 @@ messages through chrome apps.
 	};
 
 	pkg.ignore = function(/* Array */handle){
-		// summary:
-		//		Disconnect a subscribed function for a topic.
-		// handle: Array
-		//		The return value from a $.subscribe call.
-		// example:
-		//	|	var handle = $.subscribe("/something", function(){});
-		//	|	$.pkg.ignore(handle);
 
 		var t = handle[0];
 		cache[t] && d.each(cache[t], function(idx){
@@ -90,16 +57,10 @@ messages through chrome apps.
 
 		// respond to post messages
 		window.onmessage = function(event) {
-			return pkg.send(event.data.endpoint, [event.data.message])
-		};
-
-		return pkg.listen("pkg", function(message, endpoint, block) {
-          var params = {
-          	message: message,
-          	endpoint: endpoint
-          }
-          return receiver.postMessage(params, "*", block);
-        });
+			cache[event.data.endpoint] && d.each(cache[event.data.endpoint], function(){
+				this.apply(d, event.data.message || []);
+			});
+		};          
 	};
 
 })(jQuery);
