@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 	<title></title>
 		<!-- default kendo style is included. change 'default' to either metro, blueOpal black or silver to get a different theme -->
-		<link rel="stylesheet" href="css/kendo.common.min.css" />
-		<link rel="stylesheet" href="css/kendo.default.min.css" />
+		<link rel="stylesheet" href="http://cdn.kendostatic.com/2012.2.913/styles/kendo.common.min.css" />
+		<link rel="stylesheet" href="http://cdn.kendostatic.com/2012.2.913/styles/kendo.default.min.css" />
 		<!-- use twitter bootstrap for its sweet layouts -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<!-- your custom amazing styles -->
@@ -32,20 +32,18 @@
 
 	<!-- include jQuery first, then Kendo UI -->
 	<script src="js/jquery.min.js"></script>
-	<script src="js/kendo.web.min.js"></script>
+	<script src="http://cdn.kendostatic.com/2012.2.913/js/kendo.all.min.js"></script>
 	<!-- include the twitter bootstrap js -->
 	<script src="js/bootstrap.min.js"></script>
-	<!-- inlcude Peter Higgins fantastic pub/sub jQuery plugin -->
-	<script src="js/pubsub.min.js"></script>
-	<!-- include the sandbox postman -->
-	<script src="js/postman.js"></script>
+	<!-- inlcude pkg plugin -->
+	<script src="js/pkg.js"></script>
 
 	<script>
 
 		$(function() {
 
-			// initialize the postman
-			MYAPP.postman.init(window.top);
+			// initialize the pkg plugin
+			$.pkg.init(window.top);
 
 			// create a new kendo ui window and assign its reference to the win variable
 			var win = $("<div></div>").kendoWindow({
@@ -56,11 +54,11 @@
 			// assign a click event to the button
 			$("button").on("click", function() {
 				// send the message to the packaged app to open the native 'select file' window
-				$.publish("/postman/deliver", [ {}, "/select/file"]);
+				$.pkg.send("pkg", [{}, "/select/file"]);
 			});
 
 			// subscribe to the file loaded event
-			$.subscribe("/file/loaded", function(message) {
+			$.pkg.listen("/file/loaded", function(message) {
 				// create a new image
 				var img = new Image();
 				img.src = message.src;

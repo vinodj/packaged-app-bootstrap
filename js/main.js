@@ -1,17 +1,17 @@
-MYAPP = MYAPP || {};
+var MYAPP = MYAPP || {};
 
 MYAPP.main = (function($) {
 	
 	// get a reference to the iframe that holds the app
 	iframe = document.getElementById("iframe");
 
-	// initialize the postman. he's off of MYAPP. He needs to know
+	  // initialize the postman. he's off of MYAPP. He needs to know
     // who the recipient is. It's the iframe where the app lives.
-    MYAPP.postman.init(iframe.contentWindow);
+    $.pkg.init(iframe.contentWindow);
 
     // subscribe to the /select/image message and return an image using
     // the native api file picker in chrome packaged apps
-    $.subscribe("/select/file", function() {
+    $.pkg.listen("/select/file", function() {
     
         chrome.fileSystem.chooseFile({ type: "openFile"}, function(entry) {
     
@@ -24,7 +24,7 @@ MYAPP.main = (function($) {
             // create an event for when the file is done reading
             reader.onloadend = function(e) {
               // tell the postman to deliver this to the sandbox
-              $.publish("/postman/deliver", [ { message: { src: this.result } }, "/file/loaded"])
+              $.pkg.send("pkg", [ { src: this.result }, "/file/loaded"])
             }
     
             // read the file as a data URL
