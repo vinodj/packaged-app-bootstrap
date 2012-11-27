@@ -1,6 +1,6 @@
 {
- "name": "<Application Name>",
- "description": "<Application Description>",
+ "name": "Kendo UI Packaged App Bootstrap",
+ "description": "A sample packaged application for Chrome using Kendo UI",
  "version": "1.0",
  "manifest_version": 2,
  "offline_enabled" : true,
@@ -10,7 +10,10 @@
   }
  },
  "permissions": [
-   "fileSystem"
+   "fileSystem",
+   "contextMenus",
+   "notifications",
+   "videoCapture"
  ],
   "sandbox": {
     "pages": [ "index.html" ]

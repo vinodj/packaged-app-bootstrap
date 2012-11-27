@@ -1,5 +1,10 @@
 (function($) {
 	
+  var notifications = window.notifications || window.webkitNotifications,
+  canvas, ctx;
+
+  navigator.getUserMedia = window.navigator.webkitGetUserMedia || navigator.getUserMedia;
+
 	// get a reference to the iframe that holds the app
 	iframe = document.getElementById("iframe");
 
@@ -31,6 +36,67 @@
           });
         
         });   
+    });
+
+    $.pkg.listen("/contextMenu/item/add", function(title, type) {
+      // add a new context menu item
+      chrome.contextMenus.create({ id: title, title: title, type: type }, 
+      function() {
+        if (chrome.runtime.lastError) {
+          $.pkg.send("/contextMenu/item/created", [ false, chrome.runtime.lastError.message ]);
+        } 
+        else {
+          $.pkg.send("/contextMenu/item/created", [ true ]);
+        }
+      });
+    });
+
+    $.pkg.listen("/notifications/create", function(title, message) {
+      notifications.createNotification(null, title, message).show(); // note the show()
+    });
+
+    $.pkg.listen("/start/camera", function() {
+
+      draw = function() {
+        requestAnimationFrame(draw);
+        update();
+      };
+      
+      update = function() {
+        
+        var buffer, img;
+        
+        try {
+          ctx.drawImage(video, 0, 0, video.width, video.height);
+        } catch (ex) {
+
+        }
+        
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        buffer = img.data.buffer;
+      
+        $.pkg.send("/camera/update", [ buffer ]);
+      };
+
+      success = function(stream) {
+        var video = document.getElementById("video");
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
+        var e = window.URL || window.webkitURL;
+        video.src = e ? e.createObjectURL(stream) : stream;
+        video.play();
+        return draw();
+      };
+      
+      failure = function() {
+        return update = function() {
+          paused = true;
+          return $.pkg.send("/camera/error");
+        };
+      };
+
+      navigator.getUserMedia({ video: true }, success, failure);
+
     });
 
 })(jQuery);
