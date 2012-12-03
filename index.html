@@ -32,14 +32,15 @@
 					<li>Context Menus</li>
 					<li>Notifications</li>
 					<li>Video</li>
+					<li>Text To Speech</li>
 				</ul>
-				<div>
+				<div class="content">
 					<p>You can read and write to files using the <a href="http://developer.chrome.com/apps/fileSystem.html">chrome.fileSystem API</a>
 					</p>
 					<p>This example allows you to select an image and show it in a modal window.</p>
 					<button class="k-button" data-bind="events: { click: fileSystem.pick }">Select File</button>
 				</div>
-				<div>
+				<div class="content">
 					<p>Custom context menu's can be created with the <a href="http://developer.chrome.com/apps/contextMenus.html">chrome.contextMenu API</a></p>
 					<p>Right click anywhere to see the context menu</p>
 					<div>
@@ -68,7 +69,7 @@
 						</div>
 					</div>
 				</div>
-				<div>
+				<div class="content">
 					<p>Create notifications with the webkitNotifications API. Not a packaged app API, but still fun.</p>
 					<div class="row">
 						<div class="span_4">
@@ -86,19 +87,35 @@
 						</div>
 					</div>
 				</div>
-				<div>
+				<div class="content">
 					<p>Getting video into a sandbox requires the use of a post message. You can get the stream in the extension and then sending it down frame by frame into the sanbox over postMessages.</p>
 					<div class="row">
 						<div class="span_4">
-							<button class="k-button" data-bind="events: { click: video.start }">Start Video</button>	
+							<button class="k-button" data-bind="events: { click: camera.on }, invisible: camera.isOn">Turn On</button>	
+							<button class="k-button" data-bind="events: { click: camera.off }, visible: camera.isOn">Turn Off</button>	
 						</div>
-					</div>
+					</div>	
 					<div class="row">
 						<br>
 						<div class="span_10">
-							<canvas id="video" width="720" height="480"></canvas>
+							<canvas data-bind="visible: camera.isOn" id="video" width="720" height="480"></canvas>
 						</div>
 					</div>
+				</div>
+				<div class="content">
+					<p>You can use the chrome tts (text to speech) engine to say typed text.</p>
+					<div class="row">
+						<div class="span_4">
+							<select data-role="combobox" class="combobox" data-bind="value: tts.selected">
+								<option>This mission is too important for me to allow you to jeopardize it.</option>
+								<option>Hey, laser lips, your mama was a snow blower</option>
+								<option>Destruct sequence engaged. Awaiting final code for 30 second countdown.</option> 
+							</select>
+						</div>
+						<div class="span_4">
+							<button data-bind="click: tts.say" class="k-button">Speak</button>
+						</div>
+					</div>	
 				</div>
 			</div>
 		</div>
@@ -143,9 +160,26 @@
 						$.pkg.send("/notifications/create", [ this.get("notifications.title"), this.get("notifications.message") ]);
 					}
 				},
-				video: {
-					start: function() {
-						$.pkg.send("/start/camera");
+				camera: {
+					isOn: false,
+					on: function() {
+						// toggle the camera on
+          				this.set("camera.isOn", true);
+						$.pkg.send("/camera/on");
+					},
+					off: function() {
+						this.set("camera.isOn", false);
+						$.pkg.send("/camera/off");
+					}
+				},
+				tts: {
+					selected: null,
+					say: function(){
+						var message = this.get("tts.selected");
+						if ($.type(message) !== "string") {
+							message = message.text
+						}
+						$.pkg.send("/say", [ message ]);
 					}
 				}
 			})

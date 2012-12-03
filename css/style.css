@@ -2,6 +2,14 @@
 	width: 875px;
 }
 
+#examples .content {
+	padding-top: 20px;
+}
+
 #message {
+	width: 400px;
+}
+
+.combobox {
 	width: 400px;
 }

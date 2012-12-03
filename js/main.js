@@ -1,9 +1,11 @@
 (function($) {
 	
-  var notifications = window.notifications || window.webkitNotifications,
-  canvas, ctx;
-
+  // normalize all API's
+  window.notifications = window.notifications || window.webkitNotifications;
   navigator.getUserMedia = window.navigator.webkitGetUserMedia || navigator.getUserMedia;
+  window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+
+  var canvas, ctx, camera;
 
 	// get a reference to the iframe that holds the app
 	iframe = document.getElementById("iframe");
@@ -55,11 +57,13 @@
       notifications.createNotification(null, title, message).show(); // note the show()
     });
 
-    $.pkg.listen("/start/camera", function() {
+    $.pkg.listen("/camera/on", function() {
 
       draw = function() {
-        requestAnimationFrame(draw);
-        update();
+        if (camera) {
+          requestAnimationFrame(draw);
+          update();
+        }
       };
       
       update = function() {
@@ -85,6 +89,7 @@
         var e = window.URL || window.webkitURL;
         video.src = e ? e.createObjectURL(stream) : stream;
         video.play();
+        camera = true;
         return draw();
       };
       
@@ -98,5 +103,16 @@
       navigator.getUserMedia({ video: true }, success, failure);
 
     });
+
+    // subscribe to the camera off event
+    $.pkg.listen("/camera/off", function() {
+      camera = false;
+      video.src = undefined;  
+    });
+
+    // listen for the tts event
+    $.pkg.listen("/say", function(message) {
+      chrome.tts.speak(message);
+    })
 
 })(jQuery);

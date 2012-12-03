@@ -13,7 +13,8 @@
    "fileSystem",
    "contextMenus",
    "notifications",
-   "videoCapture"
+   "videoCapture",
+   "tts"
  ],
   "sandbox": {
     "pages": [ "index.html" ]
