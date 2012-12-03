@@ -33,6 +33,7 @@
 					<li>Notifications</li>
 					<li>Video</li>
 					<li>Text To Speech</li>
+					<li>Idle State</li>
 				</ul>
 				<div class="content">
 					<p>You can read and write to files using the <a href="http://developer.chrome.com/apps/fileSystem.html">chrome.fileSystem API</a>
@@ -117,9 +118,31 @@
 						</div>
 					</div>	
 				</div>
+				<div class="content">
+					<p>The chrome.idle API allows you to query the system to know if the user has gone idle for an amount of time that you specify, when they are active again, and if the machine has been locked.</p>
+					<div class="row">
+						<div class="span_4">
+							<input data-role="numerictextbox" data-format="#" data-min="15" data-bind="value: idle.interval, events: { change: idle.setInterval }">
+						</div>
+						<br />
+					</div>	
+					<div class="row">
+						<div class="span_6">
+							<h2>User Idle Status:</h2>
+							<div id="listview" data-role="listview" data-bind="source: idle.events" data-template="idle-template"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+
+	<script type="text/x-kendo-templ" id="idle-template">
+		<div class="row">
+			<div class="span_4">#: time #</div>
+			<div class="span_4">#: status #</div>
+		</div>
+	</script>
 
 	<!-- include jQuery first, then Kendo UI -->
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
@@ -135,6 +158,9 @@
 
 			// initialize the pkg plugin
 			$.pkg.init(window.top);
+
+			// get the current date/time
+			var now = kendo.toString(new Date(), "g");
 
 			// create a view model for this app
 			var viewModel = new kendo.observable({
@@ -181,6 +207,13 @@
 						}
 						$.pkg.send("/say", [ message ]);
 					}
+				},
+				idle: {
+					events: [{ time: now, status: "active" }],
+					interval: 60,
+					setInterval: function() {
+						$.pkg.send("/idle/setInterval", [this.get("idle.interval")]);
+					}
 				}
 			})
 
@@ -223,6 +256,10 @@
           		imgData.data.set(videoData);
           		
           		ctx.putImageData(imgData, 0, 0);
+			})
+
+			$.pkg.listen("/idle/event", function(e) {
+				viewModel.get("idle.events").push({ time: kendo.toString(new Date(), "g"), status: e });
 			})
 
 			kendo.bind(document.body, viewModel);

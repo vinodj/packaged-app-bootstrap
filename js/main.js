@@ -7,6 +7,10 @@
 
   var canvas, ctx, camera;
 
+  chrome.idle.onStateChanged.addListener(function(e) {
+    $.pkg.send("/idle/event", [e]);
+  });
+
 	// get a reference to the iframe that holds the app
 	iframe = document.getElementById("iframe");
 
@@ -113,6 +117,12 @@
     // listen for the tts event
     $.pkg.listen("/say", function(message) {
       chrome.tts.speak(message);
-    })
+    });
+
+    // attach to idle query
+    $.pkg.listen("/idle/setInterval", function(wait) {
+      chrome.idle.setDetectionInterval(wait);
+    });
+
 
 })(jQuery);

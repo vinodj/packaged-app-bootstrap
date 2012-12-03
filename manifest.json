@@ -14,7 +14,8 @@
    "contextMenus",
    "notifications",
    "videoCapture",
-   "tts"
+   "tts",
+   "idle"
  ],
   "sandbox": {
     "pages": [ "index.html" ]
