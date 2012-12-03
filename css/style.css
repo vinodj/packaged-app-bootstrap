@@ -1,9 +1,6 @@
 #examples {
 	width: 875px;
-}
-
-#examples .content {
-	padding-top: 20px;
+	opacity: 0;
 }
 
 #message {
